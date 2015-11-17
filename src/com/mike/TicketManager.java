@@ -11,6 +11,7 @@ public class TicketManager {
         LinkedList<Ticket> resolvedTickets = new LinkedList<>(); //deleted tickets ( resolved)
 
         // create date object to insert current date (following user defined format) into file name
+       /*  perhaps moving write to it's own method would improve quality of code and readabilty */
         Date today = new Date();
         SimpleDateFormat date_format = new SimpleDateFormat("MM_dd_yyyy");
         String date = date_format.format(today);
