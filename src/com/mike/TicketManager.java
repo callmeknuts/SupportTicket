@@ -1,8 +1,5 @@
 package com.mike;
-import java.io.BufferedWriter;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import  java.util.*;
@@ -13,32 +10,38 @@ public class TicketManager {
         LinkedList<Ticket> ticketQueue = new LinkedList<>(); //current tickets (unresolved)
         LinkedList<Ticket> resolvedTickets = new LinkedList<>(); //deleted tickets ( resolved)
 
-
-        BufferedWriter buffWriter = new BufferedWriter(new FileWriter("Unresolved_tickets_as_of" + SimpleDateFormat.getDateInstance()  +".txt"));
-        BufferedWriter buffWriter2 = new BufferedWriter(new FileWriter("Resolved_tickets_as_of" + SimpleDateFormat.getDateInstance() +".txt", true));
-
-
+        // create date object to insert current date (following user defined format) into file name
+        Date today = new Date();
+        SimpleDateFormat date_format = new SimpleDateFormat("MM_dd_yyyy");
+        String date = date_format.format(today);
+        // write ticket queue to file (unresolved)
+        BufferedWriter buffWriter = new BufferedWriter(new FileWriter("open_tickets.txt"));
+        // write resolved tickets to file
+        BufferedWriter buffWriter2 = new BufferedWriter(new FileWriter("Resolved_tickets_as_of" + date + ".txt", true));
         Scanner scan = new Scanner(System.in);
+
         while(true){
-            System.out.println("1. Enter Ticket\n2. Delete by ID\n3. Delete by Issue\n4. Search by Name\n5. View Tickets\n6. Exit");
+            printMenu();
             int task = Integer.parseInt(scan.nextLine());
             if (task == 1) {
-//Call addTickets, which will let us enter any number of new tickets
+            //Call addTickets, which will let us enter any number of new tickets
                 addTickets(ticketQueue);
             } else if (task == 2) {
-//delete a ticket
+            //delete a ticket
                 deleteTicket(ticketQueue, resolvedTickets);
-            } else if (task == 3){ //by issue
+            } else if (task == 3){
+                // search by issue then delete by ticket ID
                 searchByKeyword(ticketQueue, task);
                 System.out.println("Do you want to delete a ticket? (y or n)");
                 String delete = scan.nextLine();
                 if (delete.equalsIgnoreCase("y")) {
                     deleteTicket(ticketQueue, resolvedTickets);
                 }
-
-            } else if ( task == 4 ) { //by name
+            } else if ( task == 4 ) {
+                //search tickets by name
                 searchByKeyword(ticketQueue, task);
             } else if (task == 5){
+                // print all unresolved tickets
                 printAllTickets(ticketQueue);
             } else if (task ==6){
                 // quit program
@@ -57,17 +60,14 @@ public class TicketManager {
             else {
 //this will happen for 3 or any other selection that is a valid int
 //TODO Program crashes if you enter anything else - please fix
-//Default will be print all tickets
+
                 printAllTickets(ticketQueue);
             }
         }
-        scan.close();
     }
 
-//    protected static void printToFile (LinkedList<Ticket> ticketQueue, LinkedList<Ticket> re)
-
     protected static void deleteTicket(LinkedList<Ticket> ticketQueue, LinkedList<Ticket> resolvedTickets) {
-//What to do here? Need to delete ticket, but how do we identify the ticket to delete?
+    //What to do here? Need to delete ticket, but how do we identify the ticket to delete?
         if (ticketQueue.size() == 0) { //no tickets!
             System.out.println("No tickets to delete!\n");
             return;
@@ -96,34 +96,17 @@ public class TicketManager {
                 }
             }
         } while (!found);
-
-//            while (!found) {
-//                for (Ticket ticket : ticketQueue) {
-//                    if (ticket.getTicketID() == deleteID) {
-//                        found = true;
-//                        System.out.println("Enter problem resolution:");
-//                        String resolution = deleteScanner.next();
-//                        ticket.setResolvedDate(new Date());
-//                        ticket.setResolution(resolution);
-//                        resolvedTickets.add(ticket);
-//                        ticketQueue.remove(ticket);
-//                        System.out.println(String.format("Ticket %d deleted", deleteID));
-//                        break; //don't need loop any more.
-//                    }
-//                }
-//                System.out.println("Ticket ID not found, no ticket deleted \n" + "Please choose a valid ID");
-//                deleteID = deleteScanner.nextInt();
+        // need no valid ticket message
                 printAllTickets(ticketQueue); //print updated list
             }
 
 
-    //Move the adding ticket code to a method
+    // Method to add ticket to unresolved
     protected static void addTickets(LinkedList<Ticket> ticketQueue) {
         Scanner sc = new Scanner(System.in);
         boolean moreProblems = true;
         String description;
         String reporter;
-//let's assume all tickets are created today, for testing. We can change this later if needed
         Date dateReported = new Date(); //Default constructor creates date with current date/time
         int priority;
         while (moreProblems){
@@ -134,7 +117,6 @@ public class TicketManager {
             System.out.println("Enter priority of " + description);
             priority = Integer.parseInt(sc.nextLine());
             Ticket t = new Ticket(description, priority, reporter, dateReported);
-//ticketQueue.add(t);
             addTicketInPriorityOrder(ticketQueue, t);
             printAllTickets(ticketQueue);
             System.out.println("More tickets to add?");
@@ -143,8 +125,26 @@ public class TicketManager {
                 moreProblems = false;
             }
         }
-    }	protected static void addTicketInPriorityOrder(LinkedList<Ticket> tickets, Ticket newTicket){
-//Logic: assume the list is either empty or sorted
+    }
+//    // define a constructor that accept required variables, map values in constructor,
+//    // then read line, parse and use constructor to create instance, add to LinkedList
+//      protected static void unresolvedTickets{
+//        String content = "";
+//        int count = 1;
+//        File file = new File("open_tickets.txt");
+//        LinkedList<Ticket> ticketQueue = new LinkedList<>();
+//        try {
+//
+//        } catch (IOException e){
+//
+//        }
+//    }
+
+//
+//    }
+
+    protected static void addTicketInPriorityOrder(LinkedList<Ticket> tickets, Ticket newTicket){
+        //Logic: assume the list is either empty or sorted
         if (tickets.size() == 0 ) {//Special case - if list is empty, add ticket and return
             tickets.add(newTicket);
             return;
@@ -170,14 +170,9 @@ public class TicketManager {
         System.out.println(" ------- All open tickets ----------");
         for (Ticket t : tickets ) {
             System.out.println(t); //Write a toString method in Ticket class
-//println will try to call toString on its argument
+            // println will try to call toString on its argument
         }
         System.out.println(" ------- End of ticket list ----------");
-    }
-
-    String getTimeStamp(){
-        DateFormat format = new SimpleDateFormat("MMMMM_dd_yyyy");
-        return format.format(new Date());
     }
 
     protected static LinkedList<Ticket> searchByKeyword(LinkedList<Ticket> tickets, int task ){
@@ -204,14 +199,17 @@ public class TicketManager {
                     matches = true;
                 }
             }
-
         }
         if (!matches) {
             System.out.println("Nothing matching keyword found");
         }
-
         printAllTickets(ticketSearch);
         return ticketSearch;
         }
+
+    public static void printMenu() {
+        System.out.println("1. Enter Ticket\n2. Delete by ID\n3. Delete by Issue\n4. Search by Name\n5. View Tickets\n6. Exit");
+    }
+
 }
 

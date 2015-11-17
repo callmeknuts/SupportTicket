@@ -1,12 +1,11 @@
 package com.mike;
 
-import java.io.Serializable;
 import java.util.Date;
 
 /*
  * Created by Mike on 11/11/2015.
  */
-public class Ticket implements Serializable {
+public class Ticket {
     private int priority;
     private String reporter; //Stores person or department who reported issue
     private String description;
@@ -44,7 +43,7 @@ public class Ticket implements Serializable {
     public void setResolution(String resolution) {this.resolution = resolution;}
 
     public String toString() {
-        return ("ID = " + this.ticketID + " Issue: " + this.description + "\n" + "Priority: " + this.priority + "\n" +  "Reported by: "
+        return ("ID = " + this.ticketID + "\n" + "Issue: " + this.description + "\n" + "Priority: " + this.priority + "\n" +  "Reported by: "
                 + this.reporter + "\n" + "Reported on: " + this.dateReported + "\n");
     }
 }
